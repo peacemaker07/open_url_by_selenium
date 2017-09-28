@@ -3,3 +3,4 @@ __pycache__
 env
 chromedriver
 *.txt
+!requirements.txt
