@@ -1,9 +1,12 @@
 import os
+import sys
 from time import sleep
 from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities 
 
 # DRIVER_PATH = os.path.join(os.path.dirname(__file__), 'chromedriver')
+SLEEP_TIME_MAIN = 3
+SLEEP_TIME_POPUP = 3
 
 def _is_skip(url_list):
     return (url_list[0] == "-" if len(url_list) > 0 else False)
@@ -19,15 +22,6 @@ def _log_print(driver, url):
     for entry in driver.get_log('browser'):
         print("==browser==")
         print(entry)
-    #for entry in driver.get_log('driver'):
-    #    print("==driver==")
-    #    print(entry)
-    #for entry in driver.get_log('client'):
-    #    print("==client==")
-    #    print(entry)
-    #for entry in driver.get_log('server'):
-    #    print("==server==")
-    #    print(entry)
 
 def _login(driver, url_list):
     user_id_text = driver.find_element_by_id("user_id")
@@ -42,31 +36,32 @@ def open_popup(driver, url_list):
     window_main = driver.window_handles[0]
     for find_text in url_list[2:]:
         elements = driver.find_elements_by_link_text(find_text)
-        sleep_time = 5
         if not elements:
             elements = driver.find_elements_by_class_name(find_text)
-            sleep_time = 1
+            # sleep_time = 1
         for e in elements:
             e.click()
-            sleep(sleep_time)
+            sleep(SLEEP_TIME_POPUP)
 
+            url = driver.current_url
             try:
                 window_after = driver.window_handles[1]
                 driver.switch_to_window(window_after)
+                url = driver.current_url
                 _log_print(driver, url)
-                sleep(10)
+                # sleep(10)
                 driver.close()
                 driver.switch_to_window(window_main)
             except:
                 _log_print(driver, url)
 
-def open_url():
+def open_url(input_file):
     d = DesiredCapabilities.CHROME
     d['loggingPrefs'] = { 'browser':'ALL' }
     # driver = webdriver.Chrome(DRIVER_PATH)
     driver = webdriver.Chrome(desired_capabilities=d)
 
-    with open('url.txt', 'r', encoding='utf-8') as f:
+    with open(input_file, 'r', encoding='utf-8') as f:
         urls_org = f.readlines()
         urls = list(map(lambda x: x.replace('\n', ''), urls_org))
 
@@ -85,7 +80,7 @@ def open_url():
                 # メインページ
                 driver.get(url_list[0])
                 _log_print(driver, url)
-                sleep(5)
+                sleep(SLEEP_TIME_MAIN)
 
                 continue
 
@@ -95,4 +90,8 @@ def open_url():
     driver.quit()
 
 if '__main__' == __name__:
-    open_url()
+    if (len(sys.argv) != 2):
+        print('Usage: # python %s filename' % argvs[0])
+        quit()
+
+    open_url(sys.argv[1])
