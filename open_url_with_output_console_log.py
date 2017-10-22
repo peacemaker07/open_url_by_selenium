@@ -76,16 +76,14 @@ def open_url(input_file):
                 _log_print(driver, url)
                 continue
 
-            if not _is_popup(url_list):
-                # メインページ
-                driver.get(url_list[0])
-                _log_print(driver, url)
-                sleep(SLEEP_TIME_MAIN)
-
+            if _is_popup(url_list):
+                # ポップアップ
+                open_popup(driver, url_list)
                 continue
 
-            # ポップアップ
-            open_popup(driver, url_list)
+            driver.get(url_list[0])
+            _log_print(driver, url)
+            sleep(SLEEP_TIME_MAIN)
 
     driver.quit()
 
