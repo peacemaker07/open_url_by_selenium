@@ -5,11 +5,11 @@ from selenium import webdriver
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities 
 
 # DRIVER_PATH = os.path.join(os.path.dirname(__file__), 'chromedriver')
-SLEEP_TIME_MAIN = 3
-SLEEP_TIME_POPUP = 3
+SLEEP_TIME_MAIN = 2
+SLEEP_TIME_POPUP = 2
 
 def _is_skip(url_list):
-    return (url_list[0] == "-" if len(url_list) > 0 else False)
+    return (url_list[0] in ["-", "#"] if len(url_list) > 0 else False)
 
 def _is_login(url_list):
     return (url_list[0] == "login" if len(url_list) > 0 else False)
